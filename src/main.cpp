@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <cmath>
 #include <cstdlib>
 #include <vector>
 #include "glm/detail/qualifier.hpp"
@@ -24,11 +25,19 @@ int main(int argc, char* argv[])
     auto ctx = p6::Context{{.title = "Simple-p6-Setup"}};
     ctx.maximize_window();
 
+    // Parameters
     std::vector<Boid> boids;
-    size_t            nb_boids = 20;
+    size_t            nb_boids          = 10;
+    float             boid_size         = 0.05f;
+    float             boid_rotate_speed = 0.1f;
+    float             window_offset     = 0.3f;
+    glm::vec2         boid_speed{0.01f, 0.01f};
+    glm::vec2         min_window_size{-ctx.aspect_ratio() + window_offset, -1 + window_offset};
+    glm::vec2         max_window_size{ctx.aspect_ratio() - window_offset, 1 - window_offset};
+
     for (size_t i = 0; i < nb_boids; i++)
     {
-        boids.push_back(Boid(0.05f, p6::random::point(ctx), p6::random::direction(), glm::vec2(0.01f, 0.01f)));
+        boids.push_back(Boid(boid_size, boid_rotate_speed, p6::random::point(glm::vec2(min_window_size), glm::vec2(max_window_size)), p6::random::direction(), boid_speed));
     }
 
     // Declare your infinite update loop.
@@ -36,19 +45,13 @@ int main(int argc, char* argv[])
         ctx.background(p6::NamedColor::Blue);
         for (size_t i = 0; i < nb_boids; i++)
         {
-            ctx.square(
+            ctx.equilateral_triangle(
                 p6::Center{boids[i].get_position()},
-                p6::Radius{boids[i].get_size()}
+                p6::Radius{boids[i].get_size()},
+                p6::Rotation{boids[i].get_direction()}
             );
             boids[i].move_boid();
-            if (boids[i].get_position().x > ctx.aspect_ratio() || boids[i].get_position().x < -ctx.aspect_ratio())
-            {
-                boids[i].set_direction(boids[i].get_direction() *= glm::vec2{-1.0f, 1.0f});
-            }
-            if (boids[i].get_position().y > 1 || boids[i].get_position().y < -1)
-            {
-                boids[i].set_direction(boids[i].get_direction() *= glm::vec2{1.0f, -1.0f});
-            }
+            boids[i].avoid_walls(min_window_size, max_window_size);
         }
     };
 
