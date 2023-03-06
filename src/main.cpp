@@ -50,6 +50,13 @@ int main(int argc, char* argv[])
                 p6::Radius{boids[i].get_size()},
                 p6::Rotation{boids[i].get_direction()}
             );
+            for (int j = 0; j < boids[i].get_last_positions().size(); j++)
+            {
+                ctx.circle(
+                    p6::Center{boids[i].get_last_positions()[j]},
+                    p6::Radius{0.005f}
+                );
+            }
             boids[i].move_boid();
             boids[i].avoid_walls(min_window_size, max_window_size);
         }

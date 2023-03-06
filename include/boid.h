@@ -3,11 +3,12 @@
 
 class Boid {
 private:
-    float     m_size;
-    float     m_rotate_speed;
-    glm::vec2 m_position;
-    glm::vec2 m_direction;
-    glm::vec2 m_speed;
+    float                  m_size;
+    float                  m_rotate_speed;
+    glm::vec2              m_position;
+    glm::vec2              m_direction;
+    glm::vec2              m_speed;
+    std::vector<glm::vec2> m_last_positions;
 
 public:
     // Constructors
@@ -31,6 +32,8 @@ public:
     glm::vec2 get_direction() const;
 
     glm::vec2 get_speed() const;
+
+    std::vector<glm::vec2> get_last_positions() const;
 
     // Setters
     void set_size(const float& size);

@@ -27,6 +27,11 @@ glm::vec2 Boid::get_speed() const
     return m_speed;
 }
 
+std::vector<glm::vec2> Boid::get_last_positions() const
+{
+    return m_last_positions;
+}
+
 // Setters
 void Boid::set_size(const float& size)
 {
@@ -56,6 +61,11 @@ void Boid::set_speed(const glm::vec2& speed)
 // Methods
 void Boid::move_boid()
 {
+    m_last_positions.push_back(m_position);
+    if (m_last_positions.size() > 10)
+    {
+        m_last_positions.erase(m_last_positions.begin());
+    }
     m_position += m_direction * m_speed;
 }
 
@@ -64,7 +74,7 @@ void Boid::avoid_walls(glm::vec2 min_window_size, glm::vec2 max_window_size)
     glm::mat2 rotate_left{glm::vec2(cos(m_rotate_speed), -sin(m_rotate_speed)), glm::vec2(sin(m_rotate_speed), cos(m_rotate_speed))};
     glm::mat2 rotate_right{glm::vec2(cos(m_rotate_speed), sin(m_rotate_speed)), glm::vec2(-sin(m_rotate_speed), cos(m_rotate_speed))};
 
-    // check left & right walls
+    // Check left & right walls
     if (m_position.x > max_window_size.x)
     {
         if (m_direction.y > 0)
@@ -88,7 +98,7 @@ void Boid::avoid_walls(glm::vec2 min_window_size, glm::vec2 max_window_size)
         }
     }
 
-    // check top & bottom walls
+    // Check top & bottom walls
     else if (m_position.y > max_window_size.y)
     {
         if (m_direction.x > 0)
