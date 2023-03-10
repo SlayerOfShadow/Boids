@@ -30,26 +30,23 @@ int main(int argc, char* argv[])
     size_t            nb_boids          = 10;
     float             boid_size         = 0.05f;
     float             boid_rotate_speed = 0.1f;
-    float             window_offset     = 0.3f;
-    glm::vec2         boid_speed{0.01f, 0.01f};
+    int               trail_length      = 10;
+    float             window_offset     = 0.7f;
+    glm::vec2         boid_speed{0.02f, 0.02f};
     glm::vec2         min_window_size{-ctx.aspect_ratio() + window_offset, -1 + window_offset};
     glm::vec2         max_window_size{ctx.aspect_ratio() - window_offset, 1 - window_offset};
 
     for (size_t i = 0; i < nb_boids; i++)
     {
-        boids.push_back(Boid(boid_size, boid_rotate_speed, p6::random::point(glm::vec2(min_window_size), glm::vec2(max_window_size)), p6::random::direction(), boid_speed));
+        boids.push_back(Boid(boid_size, boid_rotate_speed, trail_length, p6::random::point(glm::vec2(min_window_size), glm::vec2(max_window_size)), p6::random::direction(), boid_speed));
     }
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
-        ctx.background(p6::NamedColor::Blue);
+        ctx.background(p6::NamedColor::BabyBlue);
         for (size_t i = 0; i < nb_boids; i++)
         {
-            ctx.equilateral_triangle(
-                p6::Center{boids[i].get_position()},
-                p6::Radius{boids[i].get_size()},
-                p6::Rotation{boids[i].get_direction()}
-            );
+            // Trail (optional)
             for (int j = 0; j < boids[i].get_last_positions().size(); j++)
             {
                 ctx.circle(
@@ -57,6 +54,12 @@ int main(int argc, char* argv[])
                     p6::Radius{0.005f}
                 );
             }
+
+            ctx.equilateral_triangle(
+                p6::Center{boids[i].get_position()},
+                p6::Radius{boids[i].get_size()},
+                p6::Rotation{boids[i].get_direction()}
+            );
             boids[i].move_boid();
             boids[i].avoid_walls(min_window_size, max_window_size);
         }

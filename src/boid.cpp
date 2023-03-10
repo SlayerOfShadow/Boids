@@ -12,6 +12,11 @@ float Boid::get_rotate_speed() const
     return m_rotate_speed;
 }
 
+int Boid::get_trail_length() const
+{
+    return m_trail_length;
+}
+
 glm::vec2 Boid::get_position() const
 {
     return m_position;
@@ -43,6 +48,11 @@ void Boid::set_rotate_speed(const float& rotate_speed)
     m_rotate_speed = rotate_speed;
 }
 
+void Boid::set_trail_length(const int& trail_length)
+{
+    m_trail_length = trail_length;
+}
+
 void Boid::set_position(const glm::vec2& position)
 {
     m_position = position;
@@ -61,12 +71,14 @@ void Boid::set_speed(const glm::vec2& speed)
 // Methods
 void Boid::move_boid()
 {
+    m_position += m_direction * m_speed;
+
+    // Trail (optional)
     m_last_positions.push_back(m_position);
-    if (m_last_positions.size() > 10)
+    if (m_last_positions.size() > m_trail_length)
     {
         m_last_positions.erase(m_last_positions.begin());
     }
-    m_position += m_direction * m_speed;
 }
 
 void Boid::avoid_walls(glm::vec2 min_window_size, glm::vec2 max_window_size)
