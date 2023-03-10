@@ -7,16 +7,6 @@ float Boid::get_size() const
     return m_size;
 }
 
-float Boid::get_rotate_speed() const
-{
-    return m_rotate_speed;
-}
-
-int Boid::get_trail_length() const
-{
-    return m_trail_length;
-}
-
 glm::vec2 Boid::get_position() const
 {
     return m_position;
@@ -27,45 +17,9 @@ glm::vec2 Boid::get_direction() const
     return m_direction;
 }
 
-glm::vec2 Boid::get_speed() const
-{
-    return m_speed;
-}
-
 std::vector<glm::vec2> Boid::get_last_positions() const
 {
     return m_last_positions;
-}
-
-// Setters
-void Boid::set_size(const float& size)
-{
-    m_size = size;
-}
-
-void Boid::set_rotate_speed(const float& rotate_speed)
-{
-    m_rotate_speed = rotate_speed;
-}
-
-void Boid::set_trail_length(const int& trail_length)
-{
-    m_trail_length = trail_length;
-}
-
-void Boid::set_position(const glm::vec2& position)
-{
-    m_position = position;
-}
-
-void Boid::set_direction(const glm::vec2& direction)
-{
-    m_direction = direction;
-}
-
-void Boid::set_speed(const glm::vec2& speed)
-{
-    m_speed = speed;
 }
 
 // Methods
@@ -81,6 +35,18 @@ void Boid::move_boid()
     }
 }
 
+void Boid::turn(float axis_speed, glm::mat2 rotation1, glm::mat2 rotation2)
+{
+    if (axis_speed > 0)
+    {
+        m_direction = m_direction * rotation1;
+    }
+    else
+    {
+        m_direction = m_direction * rotation2;
+    }
+}
+
 void Boid::avoid_walls(glm::vec2 min_window_size, glm::vec2 max_window_size)
 {
     glm::mat2 rotate_left{glm::vec2(cos(m_rotate_speed), -sin(m_rotate_speed)), glm::vec2(sin(m_rotate_speed), cos(m_rotate_speed))};
@@ -89,48 +55,38 @@ void Boid::avoid_walls(glm::vec2 min_window_size, glm::vec2 max_window_size)
     // Check left & right walls
     if (m_position.x > max_window_size.x)
     {
-        if (m_direction.y > 0)
-        {
-            m_direction = m_direction * rotate_left;
-        }
-        else
-        {
-            m_direction = m_direction * rotate_right;
-        }
+        turn(m_direction.y, rotate_left, rotate_right);
     }
     else if (m_position.x < min_window_size.x)
     {
-        if (m_direction.y > 0)
-        {
-            m_direction = m_direction * rotate_right;
-        }
-        else
-        {
-            m_direction = m_direction * rotate_left;
-        }
+        turn(m_direction.y, rotate_right, rotate_left);
     }
 
     // Check top & bottom walls
     else if (m_position.y > max_window_size.y)
     {
-        if (m_direction.x > 0)
-        {
-            m_direction = m_direction * rotate_right;
-        }
-        else
-        {
-            m_direction = m_direction * rotate_left;
-        }
+        turn(m_direction.x, rotate_right, rotate_left);
     }
     else if (m_position.y < min_window_size.y)
     {
-        if (m_direction.x > 0)
-        {
-            m_direction = m_direction * rotate_left;
-        }
-        else
-        {
-            m_direction = m_direction * rotate_right;
-        }
+        turn(m_direction.x, rotate_left, rotate_right);
     }
+}
+
+void Boid::display_boid(p6::Context& context)
+{
+    // Trail (optional)
+    for (int j = 0; j < m_last_positions.size(); j++)
+    {
+        context.circle(
+            p6::Center{m_last_positions[j]},
+            p6::Radius{0.005f}
+        );
+    }
+
+    context.equilateral_triangle(
+        p6::Center{m_position},
+        p6::Radius{m_size},
+        p6::Rotation{m_direction}
+    );
 }

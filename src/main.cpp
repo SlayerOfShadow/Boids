@@ -46,23 +46,11 @@ int main(int argc, char* argv[])
         ctx.background(p6::NamedColor::BabyBlue);
         for (size_t i = 0; i < nb_boids; i++)
         {
-            // Trail (optional)
-            for (int j = 0; j < boids[i].get_last_positions().size(); j++)
-            {
-                ctx.circle(
-                    p6::Center{boids[i].get_last_positions()[j]},
-                    p6::Radius{0.005f}
-                );
-            }
-
-            ctx.equilateral_triangle(
-                p6::Center{boids[i].get_position()},
-                p6::Radius{boids[i].get_size()},
-                p6::Rotation{boids[i].get_direction()}
-            );
+            boids[i].display_boid(ctx);
             boids[i].move_boid();
             boids[i].avoid_walls(min_window_size, max_window_size);
         }
+        // display parameters
     };
 
     // Should be done last. It starts the infinite loop.
