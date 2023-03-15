@@ -3,13 +3,10 @@
 
 class Boid {
 private:
-    float                  m_size;
-    float                  m_rotate_speed;
-    int                    m_trail_length;
-    glm::vec2              m_position;
-    glm::vec2              m_direction;
-    glm::vec2              m_speed;
-    std::vector<glm::vec2> m_last_positions;
+    float     m_size;
+    float     m_speed;
+    glm::vec2 m_position;
+    glm::vec2 m_direction;
 
 public:
     // Constructors
@@ -17,24 +14,23 @@ public:
 
     ~Boid() = default;
 
-    Boid(const float& size, const float& rotate_speed, const int& trail_length, const glm::vec2& position, const glm::vec2& direction, const glm::vec2& speed)
-        : m_size(size), m_rotate_speed(rotate_speed), m_trail_length(trail_length), m_position(position), m_direction(direction), m_speed(speed) {}
-
-    // Getters
-    float get_size() const;
-
-    glm::vec2 get_position() const;
-
-    glm::vec2 get_direction() const;
-
-    std::vector<glm::vec2> get_last_positions() const;
+    Boid(const float& size, const float& speed, const glm::vec2& position, const glm::vec2& direction)
+        : m_size(size), m_speed(speed), m_position(position), m_direction(direction) {}
 
     // Methods
     void move_boid();
 
-    void turn(float axis_speed, glm::mat2 rotation1, glm::mat2 rotation2);
+    void turn(const float& axis_speed, const glm::mat2& rotation1, const glm::mat2& rotation2);
 
-    void avoid_walls(glm::vec2 min_window_size, glm::vec2 max_window_size);
+    void avoid_walls(const glm::vec2& min_window_size, const glm::vec2& max_window_size, const float& wall_distance);
 
     void display_boid(p6::Context& context);
+
+    void update_boid(const float& size, const float& speed);
+
+    void separate(const std::vector<Boid>& boids, const float& separation_distance, const float& separation_strength);
+
+    void align(const std::vector<Boid>& boids, const float& alignment_distance, const float& alignment_strength);
+
+    void cohesion(const std::vector<Boid>& boids, const float& cohesion_distance, const float& cohesion_strength);
 };
