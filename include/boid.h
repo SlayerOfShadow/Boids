@@ -20,8 +20,6 @@ public:
     // Methods
     void move_boid();
 
-    void turn(const float& axis_speed, const glm::mat2& rotation1, const glm::mat2& rotation2);
-
     void avoid_walls(const glm::vec2& min_window_size, const glm::vec2& max_window_size, const float& wall_distance);
 
     void display_boid(p6::Context& context);
