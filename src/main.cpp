@@ -7,33 +7,12 @@
 #include "imgui.h"
 #include "p6/p6.h"
 #define DOCTEST_CONFIG_IMPLEMENT
-#include "../include/boid.h"
+#include "../include/boid.hpp"
+#include "../include/default_shader.hpp"
 #include "doctest/doctest.h"
 
 int main(int argc, char* argv[])
 {
-    /* Initialize the library */
-    if (!glfwInit())
-    {
-        return -1;
-    }
-
-    // Set the minimum required OpenGL version to 3.3
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    // Create a window
-    GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL Window", nullptr, nullptr);
-    if (!window)
-    {
-        // Handle window creation failure
-        return -1;
-    }
-
-    // Make the window's context current
-    glfwMakeContextCurrent(window);
-
     { // Run the tests
         if (doctest::Context{}.run() != 0)
             return EXIT_FAILURE;
@@ -46,6 +25,53 @@ int main(int argc, char* argv[])
     // Actual app
     auto ctx = p6::Context{{.title = "Simple-p6-Setup"}};
     ctx.maximize_window();
+
+    // OpenGL setup
+    // Création d'un Vertex Buffer Object et d'un Vertex Array Object
+    GLuint vbo, vao;
+
+    // Allocation d'un Vertex Buffer Object:
+    glGenBuffers(1, &vbo);
+
+    // "vbo" devient le VBO courant sur la cible GL_ARRAY_BUFFER:
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+    // Tableau des attributs des sommets
+    GLfloat vertices[] = {
+        -0.5, -0.5, // Premier vertex
+        0.5, -0.5,  // Deuxième vertex
+        0., 0.5,    // Troisème vertex
+    };
+
+    // Stockage des données du tableau vertices dans le vbo placé sur GL_ARRAY_BUFFER (c'est à dire "vbo" ici) :
+    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // Plus de VBO sur la cible GL_ARRAY_BUFFER:
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // Allocation d'un Vertex Array Objet:
+    glGenVertexArrays(1, &vao);
+
+    // "vao" devient le VAO courant:
+    glBindVertexArray(vao);
+
+    // "vbo" devient le VBO courant sur la cible GL_ARRAY_BUFFER:
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+    // Activation de l'attribut de vertex 0; nous l'interpretons comme la position
+    glEnableVertexAttribArray(0 /* Incide attribut*/);
+    // On spécifie le type de donnée de l'attribut position ainsi que la manière dont il est stocké dans le VBO
+    glVertexAttribPointer(
+        0 /* Indice attribut */,
+        2 /* Nombre de composantes */,
+        GL_FLOAT /* Type d'une composante */,
+        GL_FALSE /* Pas de normalisation */,
+        2 * sizeof(GLfloat) /* Taille en octet d'un vertex complet entre chaque attribut position */,
+        0 /* OpenGL doit utiliser le VBO attaché à GL_ARRAY_BUFFER et commencer à l'offset 0 */
+    );
+
+    // Plus de VAO courant:
+    glBindVertexArray(0);
 
     // Parameters
     std::vector<Boid> boids;
@@ -103,8 +129,21 @@ int main(int argc, char* argv[])
             boids[i].align(boids, alignement_distance, alignement_strength);
             boids[i].cohesion(boids, cohesion_distance, cohesion_strength);
         }
+
+        // "vao" devient le VAO courant, OpenGL l'utilisera lors du dessin pour avoir des informations sur les sommets
+        glBindVertexArray(vao);
+
+        // OpenGL doit dessiner des triangles en utilisant 3 sommets (donc un seul triangle)
+        glimac::bind_default_shader();
+        glDrawArrays(GL_TRIANGLES, 0 /* Pas d'offset au début du VBO */, 3);
+
+        // Plus de VAO courant:
+        glBindVertexArray(0);
     };
 
     // Should be done last. It starts the infinite loop.
     ctx.start();
+    glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(1, &vbo);
+    return 0;
 }

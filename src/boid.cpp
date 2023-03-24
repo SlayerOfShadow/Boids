@@ -1,4 +1,4 @@
-#include "boid.h"
+#include "boid.hpp"
 #include "glm/fwd.hpp"
 
 //  Methods
