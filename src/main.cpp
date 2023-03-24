@@ -12,6 +12,28 @@
 
 int main(int argc, char* argv[])
 {
+    /* Initialize the library */
+    if (!glfwInit())
+    {
+        return -1;
+    }
+
+    // Set the minimum required OpenGL version to 3.3
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    // Create a window
+    GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL Window", nullptr, nullptr);
+    if (!window)
+    {
+        // Handle window creation failure
+        return -1;
+    }
+
+    // Make the window's context current
+    glfwMakeContextCurrent(window);
+
     { // Run the tests
         if (doctest::Context{}.run() != 0)
             return EXIT_FAILURE;
