@@ -60,7 +60,7 @@ void Boid::separate(const std::vector<Boid>& boids, const float& separation_dist
         const float distance = glm::distance(m_position, other.m_position);
         if (distance < separation_distance)
         {
-            separation += separation_strength * (m_position - other.m_position) / (distance * distance);
+            separation += separation_strength * (m_position - other.m_position) / distance;
             count++;
         }
     }

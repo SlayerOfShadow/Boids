@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 
     // Parameters
     std::vector<Boid> boids;
-    size_t            nb_boids         = 20;
+    size_t            nb_boids         = 50;
     float             boid_size        = 0.02f;
     float             boid_speed       = 0.01f;
     float             wall_distance    = 0.35f;
@@ -35,10 +35,10 @@ int main(int argc, char* argv[])
     glm::vec2         min_window_size{-ctx.aspect_ratio(), -1};
     glm::vec2         max_window_size{ctx.aspect_ratio(), 1};
 
-    float separation_distance = 0.2f;
-    float alignement_distance = 0.75f;
-    float cohesion_distance   = 0.75f;
-    float separation_strength = 0.02f;
+    float separation_distance = 0.5f;
+    float alignement_distance = 0.5f;
+    float cohesion_distance   = 0.5f;
+    float separation_strength = 0.05f;
     float alignement_strength = 0.05f;
     float cohesion_strength   = 0.05f;
 
