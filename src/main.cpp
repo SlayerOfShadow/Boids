@@ -71,15 +71,15 @@ int main(int argc, char* argv[])
 
         ctx.fill       = {1.0f, 1.0f, 1.0f};
         ctx.use_stroke = false;
-        for (size_t i = 0; i < nb_boids; i++)
+        for (auto& boid : boids)
         {
-            boids[i].display_boid(ctx);
-            boids[i].move_boid();
-            boids[i].avoid_walls(min_window_size, max_window_size, wall_distance);
-            boids[i].update_boid(boid_size, boid_speed);
-            boids[i].separate(boids, separation_distance, separation_strength);
-            boids[i].align(boids, alignement_distance, alignement_strength);
-            boids[i].cohesion(boids, cohesion_distance, cohesion_strength);
+            boid.display_boid(ctx);
+            boid.move_boid();
+            boid.avoid_walls(min_window_size, max_window_size, wall_distance);
+            boid.update_boid(boid_size, boid_speed);
+            boid.separate(boids, separation_distance, separation_strength);
+            boid.align(boids, alignement_distance, alignement_strength);
+            boid.cohesion(boids, cohesion_distance, cohesion_strength);
         }
     };
 
